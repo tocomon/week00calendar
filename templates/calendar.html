@@ -225,80 +225,87 @@
         <div class="wrap">
             <div class="jumbotron">
                 <h1 class="display-4">공유 <span style="background-color: rgb(139, 139, 139);color: white">캘린더</span></h1>
-                <div>
-                    <div class="form-group" style="width: 70%;">
-                        <input id="memo-title"  class="form-control" placeholder="">
-                    </div>
-                    <div class="form-group" style="width: 70%;">
-                        <textarea id="memo-content" class="form-control" rows="2"></textarea>
-                    </div>
+                
+                <style type="text/css">
+                    .tg  {border-collapse:collapse;border-spacing:0;}
+                    .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+                      overflow:hidden;padding:10px 5px;word-break:normal;}
+                    .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+                      font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+                    .tg .tg-0lax{text-align:left;vertical-align:top}
+                </style>
+                <table class="tg">
+                <thead>
+                    <tr>
+                    <td class="tg-0lax">일</td>
+                    <td class="tg-0lax">월</td>
+                    <td class="tg-0lax">화</td>
+                    <td class="tg-0lax">수</td>
+                    <td class="tg-0lax">목</td>
+                    <td class="tg-0lax">금</td>
+                    <td class="tg-0lax">토</td>
+                    </tr>
+                </thead>
+                </table>
+                <br>
 
-                    
-                    <style type="text/css">
-                        .tg  {border-collapse:collapse;border-spacing:0;}
-                        .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-                          overflow:hidden;padding:10px 5px;word-break:normal;}
-                        .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-                          font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-                        .tg .tg-0lax{text-align:left;vertical-align:top}
-                        </style>
-                        <table class="tg">
-                        <thead>
-                          <tr>
-                            <td class="tg-0lax">일</td>
-                            <td class="tg-0lax">월</td>
-                            <td class="tg-0lax">화</td>
-                            <td class="tg-0lax">수</td>
-                            <td class="tg-0lax">목</td>
-                            <td class="tg-0lax">금</td>
-                            <td class="tg-0lax">토</td>
-                          </tr>
-                        </thead>
-                        </table>
+                <form method="post">
+                    <label for="input1">Input 1:</label>
+                    <input type="text" name="input1" id="input1"><br>
+                    <label for="input2">Input 2:</label>
+                    <input type="text" name="input2" id="input2"><br>
+                    <input type="submit" value="Submit">
+                </form>
+                  
+                {% if request.method == 'POST' %}
+                    {% if request.form['input1'] != request.form['input2'] %}
+                      <p>The inputs are different.</p>
+                    {% else %}
+                      <p>The inputs are the same.</p>
+                    {% endif %}
+                {% endif %}
+
+                <div id="jinja">
+                    {% if request.form['memo-title'] == '김재성' %}
+                    <p>정답</p>
+                    {% else %}
+                    <p>The inputs are the same.</p>
+                    {% endif %}
+                </div>
+    
+                <p>The current time is <span id="current_time"></span>.</p>
+
+
+                <br>
+                <button type="submit" class="btn btn-primary" id="memo-button" onclick="openclose()">메모</button>
+                <br>
+                <br><br>
+
+
+
+
+
+
+                <div id = "cards-hide">
                     <div class="wrap">
-
-
-
-                    <button type="submit" class="btn btn-primary" onclick="postMemos()">등록</button>
-                    <br>
-                    <button type="submit" class="btn btn-primary" id="memo-button" onclick="openclose()">메모</button>
+                        <div>
+                            <div class="form-group" style="width: 70%;">
+                                <input id="memo-title"  class="form-control" placeholder="">
+                            </div>
+                            <div class="form-group" style="width: 70%;">
+                                <textarea id="memo-content" class="form-control" rows="2"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" onclick="postMemos()">등록</button>   
+                        </div>
+                    </div>
+                    <div>
+                        <div id="cards-box" class="card-columns" >
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div id = "cards-hide">
-                <div id="cards-box" class="card-columns" >
-                </div>
-
-            </div>
-
-
-            <div id="jinja">
-                {% if request.form['memo-title'] == '김재성' %}
-                <p>정답</p>
-                {% else %}
-                <p>The inputs are the same.</p>
-                {% endif %}
-            </div>
-
-            <form method="post">
-                <label for="input1">Input 1:</label>
-                <input type="text" name="input1" id="input1"><br>
-                <label for="input2">Input 2:</label>
-                <input type="text" name="input2" id="input2"><br>
-                <input type="submit" value="Submit">
-            </form>
-              
-            {% if request.method == 'POST' %}
-                {% if request.form['input1'] != request.form['input2'] %}
-                  <p>The inputs are different.</p>
-                {% else %}
-                  <p>The inputs are the same.</p>
-                {% endif %}
-            {% endif %}
 
 
 
-
-            <p>The current time is <span id="current_time"></span>.</p>
         </div>
     </body>
 

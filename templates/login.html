@@ -23,53 +23,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        function gotoSignup() {
-            window.location.replace("/signup")
-        }
-        function login() {
-            // let username = $("#input-username").val()
-            // let password = $("#input-password").val()
 
-            // console.log(username, password)
-
-            // if (username == "") {
-            //     alert("이름을 입력해주세요.")
-            //     $("#input-username").focus()
-            //     return;
-            // }
-
-            // if (password == "") {
-            //     alert("비밀번호를 입력해주세요.")
-            //     $("#input-password").focus()
-            //     return;
-            // }
-            // $.ajax({
-            //     type: "POST",
-            //     url: "/api/login",
-            //     data: {
-            //         username_give: username,
-            //         password_give: password,
-            //     },
-            //     success: function (response) {
-            //         if (response['result'] == 'fail') {
-            //             alert(response['msg'])
-            //         } else {
-            //             window.location.href = '/washboard'
-            //         }
-            //     }
-            // });
-            $.ajax({
-                type: "POST",
-                url: "/main",
-
-                success: function (response) {
-                    if (response['result'] == 'fail') {
-                        alert(response['msg'])
-                    } else {
-                        window.location.href = '/main'
-                    }
-                }
-            });
+        function gotoCalendar() {
+            window.location.replace("/calendar")
         }
 
     </script>
@@ -122,7 +78,7 @@
                     <div>
                         <button type="submit"
                             class="w-full flex justify-center bg-purple-800  hover:bg-purple-700 text-gray-100 p-3  rounded-lg tracking-wide font-semibold  cursor-pointer transition ease-in duration-500"
-                            s onclick="login()">
+                            s onclick="gotoCalendar()">
                             
                         </button>
                     </div>

@@ -106,11 +106,13 @@ def delete_memos():
 def get_time():
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+@app.route('/calendar')
+def calendar():
+    return render_template('calendar.html')
 
-@app.route('/main')
-def gotomain():
-    return render_template('main.html')
-
+@app.route('/edit')
+def edit():
+    return render_template('edit.html')
 
 
 
