@@ -25,57 +25,57 @@
     <script>
 
 
-
-
-
         function pwdChange() {
             let username = $("#input-username").val()
             let password = $("#input-password").val()
-            let password2 = $('#input-password-check').val()
+            let new_password = $('#input-password-new').val()
+            let nnew_password = $('#input-password-check').val()
 
-
-            let name_space = RegExp(/^[가-힣]{2,8}$/)
-            let password_valid = RegExp(/^[A-Za-z0-9]{8,20}/)
+            console.log(username, password, new_password, nnew_password)
 
             if (username == "") {
                 alert("이름을 입력해주세요.")
-                $("#input-password").focus()
-
+                $("#input-username").focus()
+                return
             }
-
-            else if ($("#text").text() != "사용가능한 이름입니다.") {
-                console.log($("#text").text())
-                alert("사용가능한 이름인지 확인해주세요.")
-            }
-            else if (!name_space.test(username)) {
-                alert("이름의 형식을 확인해주세요. 한글만 가능")
-                $("#input-password").focus()
-            } else if (password == "") {
+            if (password == "") {
                 alert("비밀번호를 입력해주세요.")
                 $("#input-password").focus()
-            } else if (!password_valid.test(password)) {
-                alert("비밀번호의 형식을 확인해주세요. 영문과 숫자만으로 8-20자")
-                $("#input-password").focus()
-            } else if (password2 == "") {
-                alert("비밀번호 확인를 입력해주세요.")
-                $("#input-password2").focus()
-            } else if (password2 != password) {
-                alert("비밀번호가 일치하지 않습니다.")
-                $("#input-password2").focus()
-            } else {
-                $.ajax({
-                    type: "POST",
-                    url: "/api/register",
-                    data: {
-                        username_give: username,
-                        password_give: password,
-                    },
-                    success: function (response) {
-                        alert("비밀번호 변경이 완료 되었습니다!")
-                        window.location.replace("/")
-                    }
-                });
+                return
             }
+            if(new_password == "") {
+                alert("새 비밀번호를 입력해주세요.")
+                $("input-password-new").val()
+                return
+            }
+            if(nnew_password == "") {
+                alert("새 비밀번호를 입력해주세요.")
+                $("input-password-check").val()
+                return
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/change-password",
+                data: {
+                    username_give: username,
+                    password_give: password,
+                    new_give: new_password,
+                    nnew_give: nnew_password
+                },
+                success: function(response) {
+                    if(response['result'] == 'fail') {
+                        alert(response['msg'])
+                    } 
+                    else if(response['result']=='success') {
+                        alert(response['msg'])
+                        window.location.href = '/'
+                    } else {
+                        return
+                    }
+                }
+            });
+
         }
         
 

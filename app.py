@@ -42,6 +42,40 @@ def saving():
     return jsonify({'msg':'포스팅 성공!'})
 
 
+##이름과 비밀번호를 받아 로그인 하는 부분 //jwt는 하지 않음
+@app.route('/login', methods=['POST'])
+def login():
+    username_receive = request.form['username_give']
+    password_receive = request.form['password_give']  # 유저가 아이디 pw 입력
+    
+    result = db.login.find_one({'name': username_receive, 'password': password_receive})
+    if result: #아이디 패스워드가 동일하면
+        return jsonify({'result': 'success'})
+    else: 
+        return jsonify({'result': 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
+
+
+#비밀번호 변경
+@app.route('/change-password', methods=['POST'])
+def changepw():
+    username_receive = request.form['username_give']
+    password_receive = request.form['password_give']
+    new_receive = request.form['new_give']
+    nnew_receive = request.form['nnew_give']
+
+    result = db.login.find_one({'name': username_receive, 'password': password_receive})
+    if result: #아이디 패스워드가 동일하고
+        print(result)
+        if new_receive == nnew_receive: #바꾸려는 비밀번호가 동일하면
+            db.login.update_one({'name':username_receive}, {'$set':{'password': new_receive}})
+            return jsonify({'result': 'success', 'msg':'수정이 완료되었습니다!'})#db에 비밀번호를 수정하고 로그인 페이지로 되돌아감
+        else: #바꾸려는 비밀번호가 동일하지 않으면 -- ssr
+            return
+    else: #아이디 패스워드가 동일하지 않으면
+        print(result)
+        return jsonify({'result': 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
+
+
 @app.route('/memo', methods=['GET'])
 def listing():
     memos = list(db.memos.find({}, {'_id': False}).sort('like', -1))
@@ -93,9 +127,13 @@ bunluy = "청소기"
 day = "월"
 time = 1
 
+
 @app.route('/timesheet', methods=['POST'])
 def getTimesheet():
-    result = list(db.users.find({'day': day, 'bunluy': bunluy}, {'_id': 0}))
+    day=request.form['day_give']
+    bunluy=request.form['bunluy_give']
+
+    result = list(db.users.find({'bunluy': bunluy, 'day': day}, {'_id': 0}))
     return jsonify({'result': 'success', 'timesheet': result})
 
 

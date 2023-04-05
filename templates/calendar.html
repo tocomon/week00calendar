@@ -107,14 +107,23 @@
         display: flex;
         justify-content: center;
     }
+    .navbar-nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .navbar-collapse {
+        justify-content: flex-end;
+    }
+
 
   
   </style>
           <script>
             $(document).ready(function () {
                 showMemos();
-                openclose();
-                showArticles();
+                openmemo();
             });
 
             function postMemos() {
@@ -264,21 +273,39 @@
                 });
             }
 
+            
+
+
+
+            let bunluy = ""
+
             function showTimesheet(){
+                let currentBtn = event.currentTarget;
+                bunluy = currentBtn.id;
+
                 $.ajax({
                     type: "POST",
                     url: "/timesheet",
-                    data: {},
+                    data: {day_give: day, bunluy_give: bunluy},
                     success: function (response) {
                         let timesheet = response["timesheet"];
+                        let tempHtml ='';
                         for (let i = 0; i < timesheet.length; i++) {
-                            let tempHtml = `<div>
-                                                ${timesheet[i]["time"]} ${timesheet[i]["class"]} ${timesheet[i]["name"]}
+                            tempHtml += `<div id="${timesheet[i]["day"]}${timesheet[i]["time"]}">
+                                                ${timesheet[i]["day"]}${timesheet[i]["time"]} ${timesheet[i]["class"]} ${timesheet[i]["name"]}
                                             </div>`;
-                            $("#timesheet").append(tempHtml);
+                            
                         }
+                        $("#timesheet").html(tempHtml);
                     }
                 })
+            }
+            
+            let day = ""
+
+            function pick(event) {
+                let currentBtn = event.currentTarget;
+                day = currentBtn.id;
             }
 
 
@@ -311,16 +338,17 @@
   <h3 class="margin">요일을 선택하세요</h3>
   <p>캘린더 기능을 바탕으로 한 일정 관리 서비스로, 비대면으로 일정을 조율할 수 있는 기능과 메모 기능을 제공합니다</p>
   <div class="button-container">
-    <div class="button big-btn"><a herf="#">일</a></div>
-    <div class="button big-btn">월</div>
-    <div class="button big-btn">화</div>
-    <div class="button big-btn">수</div>
-    <div class="button big-btn">목</div>
-    <div class="button big-btn">금</div>
-    <div class="button big-btn">토</div>
+    <div class="button big-btn" id="일" onclick="pick(event)" style="color:#5d0c71; font-size: 40px;"><b>일</b></div>
+    <div class="button big-btn" id="월" onclick="pick(event)" style="color:#414142; font-size: 40px;">월</div>
+    <div class="button big-btn" id="화" onclick="pick(event)" style="color:#414142; font-size: 40px;">화</div>
+    <div class="button big-btn" id="수" onclick="pick(event)" style="color:#414142; font-size: 40px;">수</div>
+    <div class="button big-btn" id="목" onclick="pick(event)" style="color:#414142; font-size: 40px;">목</div>
+    <div class="button big-btn" id="금" onclick="pick(event)" style="color:#414142; font-size: 40px;">금</div>
+    <div class="button big-btn" id="토" onclick="pick(event)" style="color:#5d0c71; font-size: 40px;"><b>토</b></div>
   </div>
   <div class="margin" id="timesheet">
-    aaaaaaaaaaaaa
+    <br>
+    예약 목록이 표시됩니다
   </div>
 
 
@@ -337,16 +365,13 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
         <li class="nav-item active">
-          <a class="nav-link" onclick="showTimesheet()">청소기 <span class="sr-only">(current)</span></a>
+          <a class="nav-link" id="청소기" href="#" onclick="showTimesheet()">청소기 <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Features</a>
+          <a class="nav-link" id="세탁기1" href="#" onclick="showTimesheet()">세탁기(좌)</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Pricing</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+          <a class="nav-link" id="세탁기2" href="#" onclick="showTimesheet()">세탁기(우)</a>
         </li>
       </ul>
     </div>
@@ -357,9 +382,9 @@
 <!-- Third Container (Grid) -->
 
 
-<div class="wrap">
+<div class="wrap" id = "cards-hide">
     <div class="jumbotron">
-        <div id = "cards-hide">
+        <div>
             <div class="wrap">
                 <div>
                     <div class="form-group" style="width: 70%;">
