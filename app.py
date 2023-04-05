@@ -102,9 +102,9 @@ def delete_memos():
 
 ################################################################################
 
-@app.route('/get_time')
-def get_time():
-    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+# @app.route('/get_time')
+# def get_time():
+#     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 @app.route('/calendar')
 def calendar():

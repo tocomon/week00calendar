@@ -24,16 +24,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
 
-        function sign_up() {
 
+
+
+
+        function pwdChange() {
             let username = $("#input-username").val()
             let password = $("#input-password").val()
             let password2 = $('#input-password-check').val()
-            let room = $('#room').val()
+
 
             let name_space = RegExp(/^[가-힣]{2,8}$/)
             let password_valid = RegExp(/^[A-Za-z0-9]{8,20}/)
-            let room_valid = RegExp(/^[0-9]{3,4}/)
+
             if (username == "") {
                 alert("이름을 입력해주세요.")
                 $("#input-password").focus()
@@ -60,69 +63,24 @@
                 alert("비밀번호가 일치하지 않습니다.")
                 $("#input-password2").focus()
             } else {
-
                 $.ajax({
                     type: "POST",
                     url: "/api/register",
                     data: {
                         username_give: username,
                         password_give: password,
-                        room_give: room,
                     },
                     success: function (response) {
-                        alert("회원가입이 완료 되었습니다!")
+                        alert("비밀번호 변경이 완료 되었습니다!")
                         window.location.replace("/")
                     }
                 });
             }
-
-
         }
-        function idCheck() {
-            let name_space = RegExp(/^[가-힣|0-9]{2,8}$/)
-            let name = $("#input-username").val()
-            $.ajax({
-                type: "POST",
-                url: "/api/name",
-                data: {
-                    name_give: name,
-                },
-                success: function (data) {
-                    if (name == "") {
-                        $("#text").css("color", "gray")
-                        $("#text").text("이름을 입력해주세요.");
-                        $("#input-username").focus()
-                        return;
-                    } else if (!name_space.test(name)) {
-                        $("#text").css("color", "gray")
-                        $("#text").text("이름은 한글과 숫자 8글자 이하");
-                        $("#input-username").focus()
-                        return;
-                    }
-                    else if (data == '0') {
-                        $("#text").css("color", "blue");
-                        $('#text').text("사용가능한 이름입니다.")
-                        temp = 1
-                    }
-                    else if (data == "1") {
-                        $("#text").css("color", "red");
-                        $("#text").text("이미 사용중인 이름입니다.");
+        
 
-                    }
-                },
-                error: function (error) {
-                    alert("error:" + error);
-                }
-            })
-        }
-
-        function gotoSignin() {
-            window.location.replace("/")
-        }
     </script>
-    <!-- <div
-        class="bg-purple-900 absolute top-0 left-0 bg-gradient-to-b from-gray-900 via-gray-900 to-purple-800 bottom-0 leading-5 h-full w-full overflow-hidden">
-    </div> -->
+
     <div class="relative   min-h-screen  sm:flex sm:flex-row  justify-center bg-transparent rounded-3xl shadow-xl">
         <div class="flex justify-center self-center  z-10 shadow-xl">
             <div class="p-12 bg-white mx-auto rounded-3xl w-96 ">
@@ -130,8 +88,6 @@
                     <h1 class="font-semibold text-4xl text-purple-800 mb-10">Share Calendar</h1>
                 </div>
                 <div class="mb-7">
-                    <h3 class="font-semibold text-1xl text-gray-800">비밀번호 변경 </h3>
-
                     <div class="space-y-6">
                         <!-- <div class="">
                             <input id="input-username" oninput="idCheck()"
@@ -155,8 +111,9 @@
                         </div>
 
                         <div class="relative" x-data="{ show: true }">
-                            <input id="input-password-new" placeholder="새 비밀번호" :type="show ? 'password' : 'text'"
-                                class="text-sm px-4 py-3 rounded-lg w-full bg-gray-200 focus:bg-gray-100 border border-gray-200 focus:outline-none focus:border-purple-400">
+                            <input id="input-password-new"  placeholder="새 비밀번호" :type="show ? 'password' : 'text'"
+                                class="text-sm px-4 py-3 rounded-lg w-full bg-gray-200 focus:bg-gray-100 border border-gray-200 focus:outline-none focus:border-purple-400"
+                                onkeyup="checkPasswordMatch()">
                             <div class="flex items-center absolute inset-y-0 right-0 mr-3  text-sm leading-5">
                             </div>
                         </div>
@@ -164,15 +121,18 @@
 
                         <div class="relative" x-data="{ show: true }">
                             <input id="input-password-check" placeholder="비밀번호 확인" :type="show ? 'password' : 'text'"
-                                class="text-sm px-4 py-3 rounded-lg w-full bg-gray-200 focus:bg-gray-100 border border-gray-200 focus:outline-none focus:border-purple-400">
+                                class="text-sm px-4 py-3 rounded-lg w-full bg-gray-200 focus:bg-gray-100 border border-gray-200 focus:outline-none focus:border-purple-400"
+                                onkeyup="checkPasswordMatch()">
                             <div class="flex items-center absolute inset-y-0 right-0 mr-3  text-sm leading-5">
                             </div>
                         </div>
 
+                        <div id="password-match"></div>
+
                         <div>
                             <button type="submit"
                                 class="w-full flex justify-center bg-purple-800  hover:bg-purple-700 text-gray-100 p-3  rounded-lg tracking-wide font-semibold  cursor-pointer transition ease-in duration-500"
-                                onclick="sign_up()">
+                                onclick="pwdChange()">
                                 비밀번호 변경
                             </button>
                         </div>
@@ -204,3 +164,16 @@
 </head>
 
 </html>
+<script>
+    function checkPasswordMatch() {
+        var password = document.getElementById("input-password-new").value;
+        var confirmPassword = document.getElementById("input-password-check").value;
+
+        if (password != confirmPassword) {
+            document.getElementById("password-match").innerHTML = "비밀번호를 확인하세요";
+        } else {
+            document.getElementById("password-match").innerHTML = "";
+        }
+    }
+</script>
+
