@@ -89,13 +89,12 @@ def edit():
     return render_template('edit.html')
 
 
-bunluy = "청소기"
-day = "월"
-time = 1
-
 @app.route('/timesheet', methods=['POST'])
 def getTimesheet():
-    result = list(db.users.find({'day': day, 'bunluy': bunluy}, {'_id': 0}))
+    day=request.form['day_give']
+    bunluy=request.form['bunluy_give']
+
+    result = list(db.users.find({'bunluy': bunluy, 'day': day}, {'_id': 0}))
     return jsonify({'result': 'success', 'timesheet': result})
 
 
