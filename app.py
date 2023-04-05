@@ -13,30 +13,30 @@ db = client.calender
 
 
 # MongoDB에 insert 하기
-db.login.insert_one({'name':'강원영'})
-db.login.insert_one({'name':'김범기'})
-db.login.insert_one({'name':'김인제'})
-db.login.insert_one({'name':'김재성'})
-db.login.insert_one({'name':'김태영'})
-db.login.insert_one({'name':'김현수'})
-db.login.insert_one({'name':'노원주'})
-db.login.insert_one({'name':'박주영'})
-db.login.insert_one({'name':'박준익'})
-db.login.insert_one({'name':'이민지'})
-db.login.insert_one({'name':'이민혁'})
-db.login.insert_one({'name':'이승우'})
-db.login.insert_one({'name':'이시형'})
-db.login.insert_one({'name':'이영훈'})
-db.login.insert_one({'name':'이용상'})
-db.login.insert_one({'name':'임동주'})
-db.login.insert_one({'name':'임희호'})
-db.login.insert_one({'name':'장재균'})
-db.login.insert_one({'name':'전서인'})
-db.login.insert_one({'name':'정영상'})
-db.login.insert_one({'name':'정진우'})
-db.login.insert_one({'name':'조수빈'})
-db.login.insert_one({'name':'조현오'})
-db.login.insert_one({'name':'표혜민'})
+db.login.insert_one({'name':'강원영'}, {'password': '0000'})
+db.login.insert_one({'name':'김범기'}, {'password': '0000'})
+db.login.insert_one({'name':'김인제'}, {'password': '0000'})
+db.login.insert_one({'name':'김재성'}, {'password': '0000'})
+db.login.insert_one({'name':'김태영'}, {'password': '0000'})
+db.login.insert_one({'name':'김현수'}, {'password': '0000'})
+db.login.insert_one({'name':'노원주'}, {'password': '0000'})
+db.login.insert_one({'name':'박주영'}, {'password': '0000'})
+db.login.insert_one({'name':'박준익'}, {'password': '0000'})
+db.login.insert_one({'name':'이민지'}, {'password': '0000'})
+db.login.insert_one({'name':'이민혁'}, {'password': '0000'})
+db.login.insert_one({'name':'이승우'}, {'password': '0000'})
+db.login.insert_one({'name':'이시형'}, {'password': '0000'})
+db.login.insert_one({'name':'이영훈'}, {'password': '0000'})
+db.login.insert_one({'name':'이용상'}, {'password': '0000'})
+db.login.insert_one({'name':'임동주'}, {'password': '0000'})
+db.login.insert_one({'name':'임희호'}, {'password': '0000'})
+db.login.insert_one({'name':'장재균'}, {'password': '0000'})
+db.login.insert_one({'name':'전서인'}, {'password': '0000'})
+db.login.insert_one({'name':'정영상'}, {'password': '0000'})
+db.login.insert_one({'name':'정진우'}, {'password': '0000'})
+db.login.insert_one({'name':'조수빈'}, {'password': '0000'})
+db.login.insert_one({'name':'조현오'}, {'password': '0000'})
+db.login.insert_one({'name':'표혜민'}, {'password': '0000'})
 
 
 ## HTML을 주는 부분
@@ -66,6 +66,39 @@ def saving():
         }
     db.memos.insert_one(doc)
     return jsonify({'msg':'포스팅 성공!'})
+
+##이름과 비밀번호를 받아 로그인 하는 부분 //jwt는 하지 않음
+@app.route('/login', methods=['POST'])
+def login():
+    username_receive = request.form['username_give']
+    password_receive = request.form['password_give']  # 유저가 아이디 pw 입력
+    
+    result = db.login.find_one({'name': username_receive, 'password': password_receive})
+    if result: #아이디 패스워드가 동일하면
+        return jsonify({'result': 'success'})
+    else: 
+        return jsonify({'result': 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
+
+
+#비밀번호 변경
+@app.route('/change-password', methods=['POST'])
+def changepw():
+    username_receive = request.form['username_give']
+    password_receive = request.form['password_give']
+    new_receive = request.form['new_give']
+    nnew_receive = request.form['nnew_give']
+
+    result = db.login.find_one({'name': username_receive, 'password': password_receive})
+    if result: #아이디 패스워드가 동일하고
+        print(result)
+        if new_receive == nnew_receive: #바꾸려는 비밀번호가 동일하면
+            db.login.update_one({'name':username_receive}, {'$set':{'password': new_receive}})
+            return jsonify({'result': 'success', 'msg':'수정이 완료되었습니다!'})#db에 비밀번호를 수정하고 로그인 페이지로 되돌아감
+        else: #바꾸려는 비밀번호가 동일하지 않으면 -- ssr
+            return
+    else: #아이디 패스워드가 동일하지 않으면
+        print(result)
+        return jsonify({'result': 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
 
 
 @app.route('/memo', methods=['GET'])

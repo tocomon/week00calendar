@@ -22,79 +22,84 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+
+
     <script>
+    function checkPasswordMatch() {
+        var password = document.getElementById("input-password-new").value;
+        var confirmPassword = document.getElementById("input-password-check").value;
 
+        if (password != confirmPassword) {
+            document.getElementById("password-match").innerHTML = "비밀번호를 확인하세요";
+        } else {
+            document.getElementById("password-match").innerHTML = "";
+        }
+    }
 
-
-
-
-        function pwdChange() {
+    function pwdChange() {
             let username = $("#input-username").val()
             let password = $("#input-password").val()
-            let password2 = $('#input-password-check').val()
+            let new_password = $('#input-password-new').val()
+            let nnew_password = $('#input-password-check').val()
 
-
-            let name_space = RegExp(/^[가-힣]{2,8}$/)
-            let password_valid = RegExp(/^[A-Za-z0-9]{8,20}/)
+            console.log(username, password, new_password, nnew_password)
 
             if (username == "") {
                 alert("이름을 입력해주세요.")
-                $("#input-password").focus()
-
+                $("#input-username").focus()
+                return
             }
-
-            else if ($("#text").text() != "사용가능한 이름입니다.") {
-                console.log($("#text").text())
-                alert("사용가능한 이름인지 확인해주세요.")
-            }
-            else if (!name_space.test(username)) {
-                alert("이름의 형식을 확인해주세요. 한글만 가능")
-                $("#input-password").focus()
-            } else if (password == "") {
+            if (password == "") {
                 alert("비밀번호를 입력해주세요.")
                 $("#input-password").focus()
-            } else if (!password_valid.test(password)) {
-                alert("비밀번호의 형식을 확인해주세요. 영문과 숫자만으로 8-20자")
-                $("#input-password").focus()
-            } else if (password2 == "") {
-                alert("비밀번호 확인를 입력해주세요.")
-                $("#input-password2").focus()
-            } else if (password2 != password) {
-                alert("비밀번호가 일치하지 않습니다.")
-                $("#input-password2").focus()
-            } else {
-                $.ajax({
-                    type: "POST",
-                    url: "/api/register",
-                    data: {
-                        username_give: username,
-                        password_give: password,
-                    },
-                    success: function (response) {
-                        alert("비밀번호 변경이 완료 되었습니다!")
-                        window.location.replace("/")
-                    }
-                });
+                return
             }
+            if(new_password == "") {
+                alert("새 비밀번호를 입력해주세요.")
+                $("input-password-new").val()
+                return
+            }
+            if(nnew_password == "") {
+                alert("새 비밀번호를 입력해주세요.")
+                $("input-password-check").val()
+                return
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/change-password",
+                data: {
+                    username_give: username,
+                    password_give: password,
+                    new_give: new_password,
+                    nnew_give: nnew_password
+                },
+                success: function(response) {
+                    if(response['result'] == 'fail') {
+                        alert(response['msg'])
+                    } 
+                    else if(response['result']=='success') {
+                        alert(response['msg'])
+                        window.location.href = '/'
+                    } else {
+                        return
+                    }
+                }
+            });
+
         }
-        
-
     </script>
+</head>
 
+<body>
     <div class="relative   min-h-screen  sm:flex sm:flex-row  justify-center bg-transparent rounded-3xl shadow-xl">
         <div class="flex justify-center self-center  z-10 shadow-xl">
             <div class="p-12 bg-white mx-auto rounded-3xl w-96 ">
                 <div class="mb-7">
-                    <h1 class="font-semibold text-4xl text-purple-800 mb-10">Share Calendar</h1>
+                    <h1 class="font-semibold text-4xl text-purple-800 mb-10">비밀번호 변경</h1>
                 </div>
                 <div class="mb-7">
                     <div class="space-y-6">
-                        <!-- <div class="">
-                            <input id="input-username" oninput="idCheck()"
-                                class=" w-full text-sm  px-4 py-3 bg-gray-200 focus:bg-gray-100 border  border-gray-200 rounded-lg focus:outline-none focus:border-purple-400"
-                                type="" placeholder="이름">
-                            <div style="font-size:small;float:left;" id="text"></div>
-                        </div> -->
 
                         <div class="">
                             <input id="input-username" 
@@ -161,19 +166,8 @@
         </path>
     </svg>
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js"></script>
-</head>
+</body>
 
 </html>
-<script>
-    function checkPasswordMatch() {
-        var password = document.getElementById("input-password-new").value;
-        var confirmPassword = document.getElementById("input-password-check").value;
 
-        if (password != confirmPassword) {
-            document.getElementById("password-match").innerHTML = "비밀번호를 확인하세요";
-        } else {
-            document.getElementById("password-match").innerHTML = "";
-        }
-    }
-</script>
 
