@@ -1,0 +1,305 @@
+<!Doctype html>
+<html lang="ko">
+
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+        <!-- JS --> 
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin="anonymous"></script>
+
+        <!-- 구글폰트 -->
+        <link href="https://fonts.googleapis.com/css?family=Stylish&display=swap" rel="stylesheet">
+
+
+        <title>공유 캘린더</title>
+
+        <!-- style -->
+        <style type="text/css">
+            * {
+                font-family: "Stylish", sans-serif;
+            }
+
+            .wrap {
+                width: 800px;
+                margin: auto;
+            }
+
+            .comment {
+                color: blue;
+                font-weight: bold;
+            }
+
+            #post-box {
+                orphans: 1 !important;
+                widows:1 !important;
+                width: 33%;
+                display: inline-block;
+                margin: 20px auto;
+                padding: 50px;
+                border: black solid;
+                border-radius: 5px;
+            }
+
+        </style>
+        
+
+                
+        <script>
+            $(document).ready(function () {
+                showMemos();
+                setInterval(function() {
+                    $.ajax({
+                    url: '/get_time',
+                    type: 'GET',
+                    success: function(response) {
+                        $('#current_time').html(response);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                    });
+                }, 1000);
+            });
+
+
+            function postMemos() {
+                let url = $('#memo-title').val()
+                let comment = $('#memo-content').val()
+
+                $.ajax({
+                    type: "POST",
+                    url: "/memo",
+                    data: {url_give:url, comment_give:comment},
+                    success: function (response) { // 성공하면
+                        alert(response["msg"]);
+                        window.location.reload()
+                    }
+                })
+            }
+
+
+            function showMemos() {
+                $.ajax({
+                    type: "GET",
+                    url: "/memo",
+                    data: {},
+                    success: function (response) {
+                        let memos = response['all_memos']
+                        for (let i = 0; i < memos.length; i++) {
+                            let title = memos[i]['title']
+                            let comment = memos[i]['comment']
+                            let like = memos[i]['like']
+                            let postname = memos[i]['name']
+                            let temp_html = `<div class="card" id="${postname}" id="card-list">
+                                                <div class="card-body">
+                                                    <a target="_blank" class="card-title">${title}</a>
+                                                    <p class="card-text comment">${comment}</p>
+                                                    <p calss="card-likes">${like}</p>
+                                                    <button type="button" class="btn btn-info" class="edit-button" onclick="editMemos(${postname})">수정</button>
+                                                    <button type="button" class="btn btn-danger" class="delete-button" onclick="deleteMemos(${postname})">삭제</button>
+                                                    <button type="button" class="btn btn-link" class="link-like" onclick="likeMemos(${postname})">좋아요!<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up" viewBox="0 0 16 16">
+                                                    <path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z"/>
+                                                    </svg></button>
+                                                </div>
+                                            </div>`
+
+                           $('#cards-box').append(temp_html)
+                        }
+                    }
+                })
+            }
+
+            function openclose() {
+                let status = $('#cards-hide').css('display')
+                if (status == 'block') {
+                    $('#cards-hide').hide()
+                    //$('#posting-box-btn').text('포스팅박스 열기')
+                } else {
+                    $('#cards-hide').show()
+                    //$('#posting-box-btn').text('포스팅박스 닫기')
+                }
+            }
+
+
+            
+            function hideMemos() {
+                $.ajax({
+                    type: "POST",
+                    url: "/",
+                    data: {},
+                    success: function (response) {
+                        if (response['result'] == 'success'){
+                            //$('#cards-hide').hide()
+                            document.getElementsByClassName("hide").style.display = "none";
+                            //window.location.reload()
+                        }             
+                    }
+                })
+            }
+
+
+            function editMemos(postname) {
+                $.ajax({
+                    type: "GET",
+                    url: "/memo",
+                    data: {},
+                    success: function (response) {
+                        let memos = response['all_memos']
+                        let title = memos[postname]['title']
+                        let comment = memos[postname]['comment']
+                        let temp_html = `
+                                        <div class="card-body">
+                                            <div class="form-group" style="width: 70%;">
+                                            <input id="edit-memo-title" class="form-control" class="new-title" value="${title}">
+                                        </div>
+                                        <div class="form-group" style="width: 70%;">
+                                            <textarea id="edit-memo-content" class="form-control" class="new-text" rows="1">${comment}</textarea>
+                                        </div>
+                                            <button type="button" class="btn btn-success" class="save-button" onclick="saveMemos(${postname})">저장</button>
+                                        </div>
+                                        `
+
+                        $('#'+postname).html(temp_html)
+                    }
+                })
+            }
+
+
+            function saveMemos(postname) {
+                let url = $('#edit-memo-title').val()
+                let comment = $('#edit-memo-content').val()
+                $.ajax({
+                    type: "POST",
+                    url: "/save",
+                    data: {'name_give': postname,'new_url_give':url,'new_comment_give':comment},
+                    success: function (response) {
+                        if (response['result'] == 'success') {
+                            alert('수정 완료!')
+                            window.location.reload()
+                        }
+                    }
+                })
+            }
+
+
+            function likeMemos(postname) {
+                $.ajax({
+                    type: "POST",
+                    url: "/like",
+                    data: {'name_give': postname},
+                    success: function (response) {
+                        if (response['result'] == 'success') {
+                            window.location.reload()
+                        }
+                    }
+                });
+            }
+
+            
+            function deleteMemos(postname) {
+                $.ajax({
+                    type: "POST",
+                    url: "/delete",
+                    data: {'name_give': postname},
+                    success: function (response) {
+                        if (response['result'] == 'success') {
+                            alert('삭제 완료!')
+                            window.location.reload()
+                        }
+                    }
+                });
+            }
+
+        </script>
+    </head>
+
+    <body>
+        <div class="wrap">
+            <div class="jumbotron">
+                <h1 class="display-4">공유 <span style="background-color: rgb(139, 139, 139);color: white">캘린더</span></h1>
+                <div>
+                    <div class="form-group" style="width: 70%;">
+                        <input id="memo-title"  class="form-control" placeholder="">
+                    </div>
+                    <div class="form-group" style="width: 70%;">
+                        <textarea id="memo-content" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    
+                    <style type="text/css">
+                        .tg  {border-collapse:collapse;border-spacing:0;}
+                        .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+                          overflow:hidden;padding:10px 5px;word-break:normal;}
+                        .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+                          font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+                        .tg .tg-0lax{text-align:left;vertical-align:top}
+                        </style>
+                        <table class="tg">
+                        <thead>
+                          <tr>
+                            <td class="tg-0lax">일</td>
+                            <td class="tg-0lax">월</td>
+                            <td class="tg-0lax">화</td>
+                            <td class="tg-0lax">수</td>
+                            <td class="tg-0lax">목</td>
+                            <td class="tg-0lax">금</td>
+                            <td class="tg-0lax">토</td>
+                          </tr>
+                        </thead>
+                        </table>
+                    <div class="wrap">
+
+
+
+                    <button type="submit" class="btn btn-primary" onclick="postMemos()">등록</button>
+                    <br>
+                    <button type="submit" class="btn btn-primary" id="memo-button" onclick="openclose()">메모</button>
+                </div>
+            </div>
+            <div id = "cards-hide">
+                <div id="cards-box" class="card-columns" >
+                </div>
+
+            </div>
+
+
+            <div id="jinja">
+                {% if request.form['memo-title'] == '김재성' %}
+                <p>정답</p>
+                {% else %}
+                <p>The inputs are the same.</p>
+                {% endif %}
+            </div>
+
+            <form method="post">
+                <label for="input1">Input 1:</label>
+                <input type="text" name="input1" id="input1"><br>
+                <label for="input2">Input 2:</label>
+                <input type="text" name="input2" id="input2"><br>
+                <input type="submit" value="Submit">
+            </form>
+              
+            {% if request.method == 'POST' %}
+                {% if request.form['input1'] != request.form['input2'] %}
+                  <p>The inputs are different.</p>
+                {% else %}
+                  <p>The inputs are the same.</p>
+                {% endif %}
+            {% endif %}
+
+
+
+
+            <p>The current time is <span id="current_time"></span>.</p>
+        </div>
+    </body>
+
+</html>
