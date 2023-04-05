@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+        crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <title>예약!</title>
+    <style>
+    </style>
+    <script>
+    let day = ""
+    let bun = ""
+
+    function openClose(event) {
+    let currentBtn = event.currentTarget;
+    day = currentBtn.id;
+    $('#btn-group').show();
+}
+
+function openCard(event) {
+    let bunBtn = event.currentTarget;
+    bun = bunBtn.id;
+    $("reserve-table").show();
+
+    $.ajax({
+        type: "POST",
+        url: "/find",
+        data: { day_give: day, bun_give: bun },
+        success: function (response) {
+            let reserve = response['data_list']
+            let tableBody = $('#reserve-table tbody');
+            tableBody.empty();
+            for (let i = 0; i < reserve.length; i++) {
+                let reserv = reserve[i]
+                let name = reserv['name']
+                let time = reserv['time']
+                let classs = reserv['class']
+
+                let row = $('reserve');
+                row.append($('name').text(name));
+                row.append($('time').text(time));
+                row.append($('class').text(classs));
+                tableBody.append(row);
+            }
+        }
+    });
+}
+      
+    </script>
+</head>
+
+<body>
+    <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group mr-2" role="group" aria-label="First group">
+          <button type="button" class="btn btn-secondary" id="일" onclick="openClose(event)">일</button>
+          <button type="button" class="btn btn-secondary" id="월" onclick="openClose(event)">월</button>
+          <button type="button" class="btn btn-secondary" id="화" onclick="openClose(event)">화</button>
+          <button type="button" class="btn btn-secondary" id="수" onclick="openClose(event)">수</button>
+          <button type="button" class="btn btn-secondary" id="목" onclick="openClose(event)">목</button>
+          <button type="button" class="btn btn-secondary" id="금" onclick="openClose(event)">금</button>
+          <button type="button" class="btn btn-secondary" id="토" onclick="openClose(event)">토</button>
+        </div>   
+    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+        <div id="btn-group" class="btn-group" role="group" aria-label="First group" style="display: none;">
+        <button type="button" class="btn btn-secondary" id="세탁기1" onclick="openCard(event)">세탁기1</button>
+        <button type="button" class="btn btn-secondary" id="세탁기2" onclick="openCard(event)">세탁기2</button>
+        <button type="button" class="btn btn-secondary" id="청소기" onclick="openCard(event)">청소기</button>
+    </div>
+    <table id="reserve-table" class="table table-striped" style="display: none;">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Time</th>
+                <th>Class</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <!-- <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item"><a href="#">Library</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Data</li>
+        </ol>
+    </nav> -->
+</body>
+
+</html>
