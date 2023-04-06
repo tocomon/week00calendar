@@ -331,14 +331,23 @@
                 nameHtml(afterDecode);
             }
             function nameHtml(userName) {
-                let nameHtml = `<button type="button" class="btn btn-secondary btn-lg" onclick="gotopwch()">안녕하세요 ${userName}님!</button>`
+                let nameHtml = `<button type="button" class="btn btn-secondary btn-lg" onclick="logout()">로그아웃</button>
+                <button type="button" class="btn btn-secondary btn-lg" onclick="gotopwch()">안녕하세요 ${userName}님!</button>`
                 $('#name-tag').append(nameHtml)
             }
 
             function gotopwch() {
                 window.location.href = '/edit'
             }
-            
+
+            function deleteCookie(name) {
+	            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            }
+
+            function logout() {
+                deleteCookie("username")
+                window.location.replace('/')
+            }
 
             function GetCookie() {
                 let cookieFull = document.cookie;
@@ -404,6 +413,7 @@
     <div id="name-tag">
         <button type="button" class="btn btn-secondary btn-lg">Large button</button>
     </div>
+    <br>
 </div>
 
 
