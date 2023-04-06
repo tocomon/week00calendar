@@ -124,7 +124,9 @@
         float: right;
         padding: 30px;
     }
-
+    #timesheet {
+        align-content: baseline;
+    }
 
   
   </style>
@@ -419,8 +421,7 @@
 
 <!-- Second Container -->
 <div class="container-fluid bg-2 text-center">
-  <h3 class="margin">요일을 선택하세요</h3>
-  <p>캘린더 기능을 바탕으로 한 일정 관리 서비스로, 비대면으로 일정을 조율할 수 있는 기능과 메모 기능을 제공합니다</p>
+  <h4 class="margin">원하는 요일의 사용할 도구를 선택하고 일정을 예약하세요</h3>
   <div class="button-container">
     <div class="button big-btn" id="일" style="color:#5d0c71; font-size: 40px;"><b>일
         <div class="img_button">
@@ -564,7 +565,7 @@
 
 <!-- Third Container (Grid) -->
 
-
+<br>
 <div class="wrap" id = "cards-hide">
     <div class="jumbotron">
         <div>
@@ -576,8 +577,10 @@
                     <div class="form-group" style="width: 70%;">
                         <textarea id="memo-content" class="form-control" rows="2"></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary" onclick="postMemos()">등록</button>   
+                    <button type="submit" class="btn btn-primary" onclick="postMemos()">등록</button>
                 </div>
+                <br>
+
             </div>
         <div>
             <div id="cards-box" class="card-columns" >
