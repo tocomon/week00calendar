@@ -123,6 +123,10 @@ def edit():
     return render_template('edit.html')
 
 
+bunluy = "청소기"
+day = "월"
+time = 1
+
 
 @app.route('/timesheet', methods=['POST'])
 def getTimesheet():
@@ -135,6 +139,19 @@ def getTimesheet():
     result = list(db.users.find({'bunluy': bunluy, 'day': day}, {'_id': 0}))
     return jsonify({'result': 'success', 'timesheet': result})
 
+
+clas = "green"
+
+@app.route('/reserve', methods=['POST'])
+def reserve():
+    uniq = request.form['uniq_give']
+    username = request.form['username_give']
+    user = db.users.find_one({'uniq': int(uniq)})
+    new_reserve = user['reserve'] + 1
+    db.users.update_one({'uniq': int(uniq)}, {'$set': {'name': username,'class':clas, 'reserve':new_reserve}})
+    
+    result = list(db.users.find({'uniqday': user["uniqday"]}, {'_id': 0}))
+    return jsonify({'result': 'success', 'uniqday': result})
 
 
 if __name__ == '__main__':

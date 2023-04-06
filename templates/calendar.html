@@ -120,6 +120,11 @@
         display: flex;
         justify-content: center;
     }
+    #name-tag{
+        float: right;
+        padding: 30px;
+    }
+
 
   
   </style>
@@ -127,6 +132,12 @@
             $(document).ready(function () {
                 showMemos();
                 openmemo();
+                var cookie = GetCookie();
+                if (cookie == undefined) {
+                    window.location.replace('/login')
+                }
+                $('#name-tag').empty()
+                ShowCookie();
             });
 
             function postMemos() {
@@ -294,15 +305,80 @@
                         let timesheet = response["timesheet"];
                         let tempHtml ='';
                         for (let i = 0; i < timesheet.length; i++) {
-                            tempHtml += `<div id="${timesheet[i]["day"]}${timesheet[i]["time"]}">
-                                                ${timesheet[i]["day"]}${timesheet[i]["time"]} ${timesheet[i]["class"]} ${timesheet[i]["name"]}
-                                            </div>`;
-                            
+                            tempHtml += 
+                                `<div id="uniq${timesheet[i]["uniq"]}">
+                                    ${timesheet[i]["day"]}요일 
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    ${timesheet[i]["time"]}시
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    ${timesheet[i]["class"]}반
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    ${timesheet[i]["name"]}
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <button type="button" class="btn btn-info" class="edit-button" onclick="reserve(${timesheet[i]["uniq"]})">예약</button> 
+                                </div>`;
                         }
                         $("#timesheet").html(tempHtml);
                     }
                 })
             }
+
+            function ShowCookie() {
+                let cookieFull = document.cookie;
+                let onlyForName = cookieFull.split('=');
+                let onlyName = onlyForName[1];
+                let afterDecode = decodeURI(onlyName)
+                nameHtml(afterDecode);
+            }
+            function nameHtml(userName) {
+                let nameHtml = `<button type="button" class="btn btn-secondary btn-lg" onclick="gotopwch()">안녕하세요 ${userName}님!</button>`
+                $('#name-tag').append(nameHtml)
+            }
+
+            function gotopwch() {
+                window.location.href = '/edit'
+            }
+            
+
+            function GetCookie() {
+                let cookieFull = document.cookie;
+                let onlyForName = cookieFull.split('=');
+                let onlyName = onlyForName[1];
+                let afterDecode = decodeURI(onlyName);
+                return afterDecode;
+            }
+
+
+
+            function reserve(uniq){
+                var cookie = GetCookie();
+                $.ajax({
+                    type: "POST",
+                    url: "/reserve",
+                    data: {'uniq_give': uniq, 'username_give':cookie},
+                    success: function (response) {
+
+                        let timesheet = response["uniqday"];
+                        let tempHtml = ``;
+                        for (let i = 0; i < timesheet.length; i++) {
+                            tempHtml += 
+                                `<div id="uniq${timesheet[i]["uniq"]}">
+                                    ${timesheet[i]["day"]}요일 
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    ${timesheet[i]["time"]}시
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    ${timesheet[i]["class"]}반
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    ${timesheet[i]["name"]}
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <button type="button" class="btn btn-info" class="edit-button" onclick="reserve(${timesheet[i]["uniq"]})">예약</button> 
+                                </div>`;
+                        }
+                        $("#timesheet").html(tempHtml);
+                    }
+                });
+            }
+
 
 
 
@@ -325,6 +401,9 @@
 <!-- First Container -->
 <div class="container-fluid bg-1 text-center">
   <h1 class="margin">Share Calendar</h1>
+    <div id="name-tag">
+        <button type="button" class="btn btn-secondary btn-lg">Large button</button>
+    </div>
 </div>
 
 
@@ -333,8 +412,7 @@
   <h3 class="margin">요일을 선택하세요</h3>
   <p>캘린더 기능을 바탕으로 한 일정 관리 서비스로, 비대면으로 일정을 조율할 수 있는 기능과 메모 기능을 제공합니다</p>
   <div class="button-container">
-    <div class="button big-btn" id="일" style="color:#5d0c71; font-size: 40px;"><b>
-        일
+    <div class="button big-btn" id="일" style="color:#5d0c71; font-size: 40px;"><b>일
         <div class="img_button">
             <span class="img_button" style="display: inline-block;">
                 <img src="https://cdn-icons-png.flaticon.com/128/3003/3003984.png" alt="Image 1" width="40" height="40" id="일_세탁기1" onclick="showTimesheet()">
@@ -349,77 +427,96 @@
             </span>
         </div>
     </b></div>
-    <div class="button big-btn" style="color:#414142; font-size: 40px;">
-        월
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/3003/3003984.png" alt="Image 1" width="50" height="50" id="월_세탁기1" onclick="showTimesheet()">
-        </span>
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/2954/2954915.png" alt="Image 2" width="50" height="50" id="월_세탁기2" onclick="showTimesheet()">
-        </span>
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/1169/1169368.png" alt="Image 3" width="50" height="50" id="월_청소기" onclick="showTimesheet()">
-        </span>
+    <div class="button big-btn" id="월" style="color:#414142; font-size: 40px;">월
+        <div class="img_button">
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/3003/3003984.png" alt="Image 1" width="40" height="40" id="월_세탁기1" onclick="showTimesheet()">
+            </span>
+            &nbsp;
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/2954/2954915.png" alt="Image 2" width="40" height="40" id="월_세탁기2" onclick="showTimesheet()">
+            </span>
+            &nbsp;
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/1169/1169368.png" alt="Image 3" width="40" height="40" id="월_청소기" onclick="showTimesheet()">
+            </span>
+        </div>
+    
     </div>
-    <div class="button big-btn" style="color:#414142; font-size: 40px;">
-        화
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/3003/3003984.png" alt="Image 1" width="50" height="50" id="화_세탁기1" onclick="showTimesheet()">
-        </span>
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/2954/2954915.png" alt="Image 2" width="50" height="50" id="화_세탁기2" onclick="showTimesheet()">
-        </span>
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/1169/1169368.png" alt="Image 3" width="50" height="50" id="화_청소기" onclick="showTimesheet()">
-        </span>
+    <div class="button big-btn" id="화" style="color:#414142; font-size: 40px;">화
+        <div class="img_button">
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/3003/3003984.png" alt="Image 1" width="40" height="40" id="화_세탁기1" onclick="showTimesheet()">
+            </span>
+            &nbsp;
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/2954/2954915.png" alt="Image 2" width="40" height="40" id="화_세탁기2" onclick="showTimesheet()">
+            </span>
+            &nbsp;
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/1169/1169368.png" alt="Image 3" width="40" height="40" id="화_청소기" onclick="showTimesheet()">
+            </span>
+        </div>
     </div>
-    <div class="button big-btn" style="color:#414142; font-size: 40px;">
-        수
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/3003/3003984.png" alt="Image 1" width="50" height="50" id="수_세탁기1" onclick="showTimesheet()">
-        </span>
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/2954/2954915.png" alt="Image 2" width="50" height="50" id="수_세탁기2" onclick="showTimesheet()">
-        </span>
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/1169/1169368.png" alt="Image 3" width="50" height="50" id="수_청소기" onclick="showTimesheet()">
-        </span>
+    <div class="button big-btn" id="수" style="color:#414142; font-size: 40px;">수
+        <div class="img_button">
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/3003/3003984.png" alt="Image 1" width="40" height="40" id="수_세탁기1" onclick="showTimesheet()">
+            </span>
+            &nbsp;
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/2954/2954915.png" alt="Image 2" width="40" height="40" id="수_세탁기2" onclick="showTimesheet()">
+            </span>
+            &nbsp;
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/1169/1169368.png" alt="Image 3" width="40" height="40" id="수_청소기" onclick="showTimesheet()">
+            </span>
+        </div>
     </div>
-    <div class="button big-btn" style="color:#414142; font-size: 40px;">
-        목
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/3003/3003984.png" alt="Image 1" width="50" height="50" id="목_세탁기1" onclick="showTimesheet()">
-        </span>
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/2954/2954915.png" alt="Image 2" width="50" height="50" id="목_세탁기2" onclick="showTimesheet()">
-        </span>
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/1169/1169368.png" alt="Image 3" width="50" height="50" id="목_청소기" onclick="showTimesheet()">
-        </span>
+    <div class="button big-btn" id="목" style="color:#414142; font-size: 40px;">목
+        <div class="img_button">
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/3003/3003984.png" alt="Image 1" width="40" height="40" id="목_세탁기1" onclick="showTimesheet()">
+            </span>
+            &nbsp;
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/2954/2954915.png" alt="Image 2" width="40" height="40" id="목_세탁기2" onclick="showTimesheet()">
+            </span>
+            &nbsp;
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/1169/1169368.png" alt="Image 3" width="40" height="40" id="목_청소기" onclick="showTimesheet()">
+            </span>
+        </div>
     </div>
-    <div class="button big-btn" style="color:#414142; font-size: 40px;">
-        금
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/3003/3003984.png" alt="Image 1" width="50" height="50" id="금_세탁기1" onclick="showTimesheet()">
-        </span>
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/2954/2954915.png" alt="Image 2" width="50" height="50" id="금_세탁기2" onclick="showTimesheet()">
-        </span>
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/1169/1169368.png" alt="Image 3" width="50" height="50" id="금_청소기" onclick="showTimesheet()">
-        </span>
+    <div class="button big-btn" id="금" style="color:#414142; font-size: 40px;">금
+        <div class="img_button">
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/3003/3003984.png" alt="Image 1" width="40" height="40" id="금_세탁기1" onclick="showTimesheet()">
+            </span>
+            &nbsp;
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/2954/2954915.png" alt="Image 2" width="40" height="40" id="금_세탁기2" onclick="showTimesheet()">
+            </span>
+            &nbsp;
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/1169/1169368.png" alt="Image 3" width="40" height="40" id="금_청소기" onclick="showTimesheet()">
+            </span>
+        </div>
     </div>
-    <div class="button big-btn" style="color:#5d0c71; font-size: 40px;"><b>
-        토
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/3003/3003984.png" alt="Image 1" width="50" height="50" id="토_세탁기1" onclick="showTimesheet()">
-        </span>
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/2954/2954915.png" alt="Image 2" width="50" height="50" id="토_세탁기2" onclick="showTimesheet()">
-        </span>
-        <span style="display: inline-block;">
-            <img src="https://cdn-icons-png.flaticon.com/128/1169/1169368.png" alt="Image 3" width="50" height="50" id="토_청소기" onclick="showTimesheet()">
-        </span>
+    <div class="button big-btn" id="토" style="color:#5d0c71; font-size: 40px;"><b>토
+        <div class="img_button">
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/3003/3003984.png" alt="Image 1" width="40" height="40" id="토_세탁기1" onclick="showTimesheet()">
+            </span>
+            &nbsp;
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/2954/2954915.png" alt="Image 2" width="40" height="40" id="토_세탁기2" onclick="showTimesheet()">
+            </span>
+            &nbsp;
+            <span class="img_button" style="display: inline-block;">
+                <img src="https://cdn-icons-png.flaticon.com/128/1169/1169368.png" alt="Image 3" width="40" height="40" id="토_청소기" onclick="showTimesheet()">
+            </span>
+        </div>
     </b></div>
   </div>
   <div class="margin" id="timesheet">

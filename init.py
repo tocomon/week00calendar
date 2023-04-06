@@ -42,9 +42,12 @@ db.login.insert_one({'name':'표혜민', 'password': '0000'})
 day_list = ['일', '월', '화', '수', '목', '금', '토']
 bunluy_list = ['세탁기1', '세탁기2', '청소기']
 time_list = [i for i in range(24)]
-
+i=0
+j=0
 laundry_collection = db['users']
 for day in day_list:
     for bunluy in bunluy_list:
+        j+=1
         for time in time_list:
-            db.users.insert_one({"class":"-", "name":"-", 'day': day, 'bunluy': bunluy, 'time': time})
+            db.users.insert_one({"class":"-", "name":"-", 'day': day, 'uniqday': j, 'bunluy': bunluy, 'time': time, 'reserve':0, 'uniq' : i})
+            i+=1
