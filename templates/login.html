@@ -23,6 +23,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        $(document).ready(function () {
+            var cookie = getCookie('username');
+            if (cookie != undefined) {
+                window.location.replace('/calendar')
+            }
+            });
         function login() {
             let username = $('#input-username').val();
             let password = $('#input-password').val();
@@ -39,6 +45,13 @@
                 $("#input-password").focus()
                 return;
             }
+
+            //쿠키를 저장하는 부분
+            let nameKey = "username"; //key-value값
+            let date = new Date();
+            date.setDate(date.getDate() + 30);
+            let expDate = date.toUTCString(); //시간을 문자열로
+            setCookie(nameKey, username, expDate);
 
             $.ajax({
                 type: "POST",
@@ -57,7 +70,24 @@
             });
         }
 
+        //쿠키로 저장하는 틀
+        function setCookie(NameKey, NameValue, ExpDate){
+	        let strCookie = "";
+            strCookie = NameKey + '=' + encodeURIComponent(NameValue) + "; expires=" + ExpDate; 
+            document.cookie = strCookie;
+        }
 
+        function getCookie(cookieName){
+    var cookieValue=null;
+    if(document.cookie){
+        var array=document.cookie.split((escape(cookieName)+'='));
+        if(array.length >= 2){
+            var arraySub=array[1].split(';');
+            cookieValue=unescape(arraySub[0]);
+        }
+    }
+    return cookieValue;
+}
 
 
         function gotoCalendar() {

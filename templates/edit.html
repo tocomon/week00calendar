@@ -24,6 +24,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
 
+        $(document).ready(function () {
+            $('#put-name').empty()
+            ShowCookie();
+            });
+
+        function deleteCookie(name) {
+	            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            }
 
         function pwdChange() {
             let username = $("#input-username").val()
@@ -68,8 +76,9 @@
                         alert(response['msg'])
                     } 
                     else if(response['result']=='success') {
+                        deleteCookie("username")
                         alert(response['msg'])
-                        window.location.href = '/'
+                        window.location.href = '/' //성공시
                     } else {
                         return
                     }
@@ -77,6 +86,21 @@
             });
 
         }
+        function ShowCookie() {
+            let cookieFull = document.cookie;
+            let onlyForName = cookieFull.split('=');
+            let onlyName = onlyForName[1];
+            let afterDecode = decodeURI(onlyName)
+            writename(afterDecode);
+        }
+        function writename(username) {
+            let nameHtml = `<input id="input-username" 
+                            class=" w-full text-sm  px-4 py-3 bg-gray-200 focus:bg-gray-100 border  border-gray-200 rounded-lg focus:outline-none focus:border-purple-400"
+                            type="" placeholer="이름" value="${username}">`
+            $('#put-name').append(nameHtml)
+
+        }
+
         
 
     </script>
@@ -96,7 +120,7 @@
                             <div style="font-size:small;float:left;" id="text"></div>
                         </div> -->
 
-                        <div class="">
+                        <div class="" id="put-name">
                             <input id="input-username" 
                                 class=" w-full text-sm  px-4 py-3 bg-gray-200 focus:bg-gray-100 border  border-gray-200 rounded-lg focus:outline-none focus:border-purple-400"
                                 type="" placeholder="이름">

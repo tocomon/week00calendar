@@ -47,6 +47,8 @@ def saving():
 def login():
     username_receive = request.form['username_give']
     password_receive = request.form['password_give']  # 유저가 아이디 pw 입력
+
+    
     
     result = db.login.find_one({'name': username_receive, 'password': password_receive})
     if result: #아이디 패스워드가 동일하면

@@ -116,6 +116,10 @@
     .navbar-collapse {
         justify-content: flex-end;
     }
+    #name-tag{
+        float: right;
+        padding: 30px;
+    }
 
 
   
@@ -124,6 +128,8 @@
             $(document).ready(function () {
                 showMemos();
                 openmemo();
+                $('#name-tag').empty()
+                ShowCookie();
             });
 
             function postMemos() {
@@ -309,15 +315,21 @@
             }
 
 
+            function ShowCookie() {
+            let cookieFull = document.cookie;
+            let onlyForName = cookieFull.split('=');
+            let onlyName = onlyForName[1];
+            let afterDecode = decodeURI(onlyName)
+            nameHtml(afterDecode);
+        }
+            function nameHtml(userName) {
+            let nameHtml = `<button type="button" class="btn btn-secondary btn-lg" onclick="gotopwch()">안녕하세요 ${userName}님!</button>`
+            $('#name-tag').append(nameHtml)
+        }
 
-
-
-
-
-
-
-
-
+        function gotopwch() {
+            window.location.href = '/edit'
+        }
 
         </script>
 
@@ -330,11 +342,16 @@
 <!-- First Container -->
 <div class="container-fluid bg-1 text-center">
   <h1 class="margin">Share Calendar</h1>
+<div id="name-tag">
+    <button type="button" class="btn btn-secondary btn-lg">Large button</button>
+</div>
+<br>
 </div>
 
 
 <!-- Second Container -->
 <div class="container-fluid bg-2 text-center">
+
   <h3 class="margin">요일을 선택하세요</h3>
   <p>캘린더 기능을 바탕으로 한 일정 관리 서비스로, 비대면으로 일정을 조율할 수 있는 기능과 메모 기능을 제공합니다</p>
   <div class="button-container">
